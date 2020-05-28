@@ -24,8 +24,14 @@ namespace AngularCRUD
         {
             string connectionString = "Server=(localdb)\\mssqllocaldb;Database=productsdb;Trusted_Connection=True;";
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString));
-
-            services.AddMvcCoreCustom();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -40,8 +46,9 @@ namespace AngularCRUD
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+            app.UseCors("CorsPolicy");
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseMvc(routes =>
